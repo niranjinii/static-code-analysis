@@ -79,22 +79,24 @@ def load_data(file="inventory.json"):
     Loads the inventory from a JSON file.
 
     Args:
-        file (str, optional): The file to load from. Defaults to "inventory.json".
+        file (str, optional): The file to load from. Default- "inventory.json".
 
     Returns:
         dict: The loaded inventory data. Returns empty dict if file not found.
     """
     # FIX: (Pylint: R1732) Use 'with' for resource management
     # FIX: (Pylint: W1514) Specify 'encoding'
-    # FIX: (Pylint: W0603) Removed 'global' statement. Function now returns data.
     try:
-        with open(file, "r", encoding="utf-8") as f:
-            return json.loads(f.read())
+        # 10/10 FIX: (C0103) Renamed 'f' to 'json_file'
+        with open(file, "r", encoding="utf-8") as json_file:
+            return json.loads(json_file.read())
     except FileNotFoundError:
         print(f"Info: No '{file}' found. Starting with empty inventory.")
         return {}
     except json.JSONDecodeError:
-        print(f"Error: Could not decode '{file}'. Starting with empty inventory.")
+        # FLAKE8 FIX: (E501) Broke this long print statement
+        print(f"Error: Could not decode '{file}'. "
+              "Starting with empty inventory.")
         return {}
 
 
@@ -104,15 +106,23 @@ def save_data(stock_data, file="inventory.json"):
 
     Args:
         stock_data (dict): The inventory dictionary to save.
-        file (str, optional): The file to save to. Defaults to "inventory.json".
+        # FLAKE8 FIX: (E501) Broke this long docstring line
+        file (str, optional): The file to save to.
+            Defaults to "inventory.json".
     """
     # FIX: (Pylint: R1732) Use 'with' for resource management
     # FIX: (Pylint: W1514) Specify 'encoding'
     try:
-        with open(file, "w", encoding="utf-8") as f:
-            f.write(json.dumps(stock_data, indent=4))
-    except IOError as e:
-        print(f"Error: Could not save data to '{file}': {e}")
+        # 10/10 FIX: (C0103) Renamed 'f' to 'json_file'
+        with open(file, "w", encoding="utf-8") as json_file:
+            json_file.write(json.dumps(stock_data, indent=4))
+    # 10/10 FIX: (C0103) Renamed 'e' to 'io_error'
+    except IOError as io_error:
+        # FLAKE8 FIX: (E501) Broke this long f-string by building it first
+        error_msg = (
+            f"Error: Could not save data to '{file}': {io_error}"
+        )
+        print(error_msg)
 
 
 def print_data(stock_data):
@@ -137,8 +147,9 @@ def check_low_items(stock_data, threshold=5):
 
     Args:
         stock_data (dict): The inventory dictionary.
-        threshold (int, optional): The low-stock threshold. Defaults to 5.
-
+        # FLAKE8 FIX: (E501) Broke this long docstring line
+        threshold (int, optional): The low-stock threshold.
+            Defaults to 5.
     Returns:
         list: A list of item names that are below the threshold.
     """
@@ -176,8 +187,9 @@ def main():
     print(f"Orange stock: {get_qty(stock_data, 'orange')}")
     print(f"Low items: {check_low_items(stock_data)}")
 
+    # 10/10 FIX: (C0303) Removed trailing whitespace from this line
     save_data(stock_data)
-    
+
     # Reload the data to ensure saving and loading works
     stock_data = load_data()
     print_data(stock_data)
